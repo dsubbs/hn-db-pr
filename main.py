@@ -68,7 +68,7 @@ def print_contact_info_by_name(contact_name):
 
     else:
         print("Contact not found.")
-    cursor.close
+    cursor.close()
 
 if __name__ == '__main__':
     contact_name = input("Enter the name of the contact: ")
