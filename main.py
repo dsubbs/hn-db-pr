@@ -18,7 +18,7 @@ def create_rw_conn():
     # create connection string
     conn = psycopg2.connect(host=HOST, port=PORT, user=USER,
                             database=DATABASE, password=PASSWORD)
-    print("Connection established")
+    # print("Connection established")
 
     return conn
 
@@ -59,11 +59,23 @@ def fetch_contacts():
         print(f' Contact {id}: {name} - {email} - {phone}')
     cursor.close()
 
+def print_contact_info_by_name(contact_name):
+    cursor = conn.cursor()
+    cursor.execute('''SELECT name, email, phone FROM contacts WHERE name = %s''', (contact_name,))
+    contact_info = cursor.fetchone()
+    if contact_info:
+        print("Contact Information:",contact_info[0], contact_info[1], contact_info[2])
+
+    else:
+        print("Contact not found.")
+    cursor.close()
 
 if __name__ == '__main__':
+    contact_name = input("Enter the name of the contact: ")
     conn = create_rw_conn()
     # init_table()
     # insert_contact("Danyl", "danya_sutts@gmail.com", "5555555556")
     # fetch_contacts()
+    # print_contact_info_by_name(contact_name)
     conn.commit()
     conn.close()
