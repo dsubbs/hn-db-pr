@@ -47,10 +47,23 @@ def insert_contact(name, email, phone):
 
     cursor.close()
 
+def fetch_contacts():
+    cursor = conn.cursor()
+    cursor.execute('''SELECT * from contacts''')
+    result = cursor.fetchall()
+    for row in result:
+        id = row[0]
+        name = row[1]
+        email = row[2]
+        phone = row[3]
+        print(f' Contact {id}: {name} - {email} - {phone}')
+    cursor.close()
+
 
 if __name__ == '__main__':
     conn = create_rw_conn()
     # init_table()
-    insert_contact("Hrehory", "dvornjaga666@gmail.com", "5555555555")
+    # insert_contact("Danyl", "danya_sutts@gmail.com", "5555555556")
+    # fetch_contacts()
     conn.commit()
     conn.close()
