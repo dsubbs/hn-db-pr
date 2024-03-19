@@ -50,7 +50,7 @@ def insert_contact(name, email, phone):
 
 if __name__ == '__main__':
     conn = create_rw_conn()
-    init_table()
+    # init_table()
     insert_contact("Hrehory", "dvornjaga666@gmail.com", "5555555555")
     conn.commit()
     conn.close()
