@@ -70,12 +70,31 @@ def print_contact_info_by_name(contact_name):
         print("Contact not found.")
     cursor.close()
 
+def update_contact(contact_id, name, email, phone):
+   cursor = conn.cursor()
+   cursor.execute("""UPDATE contacts SET name = %s, email = %s, phone = %s
+    WHERE id = %s""",(name, email, phone, contact_id))
+   conn.commit()
+   cursor.close()
+
+def delete_contact(contact_id):
+    cursor = conn.cursor()
+    cursor.execute('''DELETE FROM contacts WHERE id = %s''', (contact_id,))
+    conn.commit()
+    cursor.close()
+        
 if __name__ == '__main__':
-    contact_name = input("Enter the name of the contact: ")
+    #contact_name = input("Enter the name of the contact: ")
+    # contact_id = input("To change info enter the id of the contact: ")
+    # contact_id = int(input("Enter the ID of the contact to delete: "))
     conn = create_rw_conn()
     # init_table()
     # insert_contact("Danyl", "danya_sutts@gmail.com", "5555555556")
     # fetch_contacts()
     # print_contact_info_by_name(contact_name)
+    # new_name, new_phone, new_email = "Kot", "kot@kot.com", "123"
+    # update_contact(contact_id, new_name, new_email, new_phone)
+    # delete_contact(contact_id)
+
     conn.commit()
     conn.close()
