@@ -46,7 +46,7 @@ def insert_contact(name, email, phone):
         validate_contact_data(email, phone)
         inserted_id = cursor.fetchone()[0]
         print("Inserted contact with id:", inserted_id)
-
+    conn.commit()
     cursor.close()
 
 def fetch_contacts():
@@ -98,12 +98,81 @@ def validate_contact_data(email, phone):
     if not re.match(r'^\d{10}$', phone):
         raise ValueError("Invalid phone number format")
 
+def search_contact(contact_id):
+    try:
+        cursor = conn.cursor()
+        cursor.execute('''SELECT * FROM contacts WHERE id = %s''', (contact_id,))
+        contact = cursor.fetchone()
+        if contact:
+            print("Contact found:")
+            print("ID:", contact[0])
+            print("Name:", contact[1])
+            print("Email:", contact[2])
+            print("Phone:", contact[3])
+        else:
+            print("No contact found with the provided ID.")
+    except psycopg2.Error as e:
+        print("Error: Unable to search contact:", e)
+
+def view_all_contacts(conn):
+    try:
+        cursor = conn.cursor()
+        cursor.execute('''SELECT * FROM contacts''')
+        contacts = cursor.fetchall()
+        if contacts:
+            print("All Contacts:")
+            for contact in contacts:
+                print("ID:", contact[0])
+                print("Name:", contact[1])
+                print("Email:", contact[2])
+                print("Phone:", contact[3])
+                print("------------")
+        else:
+            print("No contacts found.")
+    except psycopg2.Error as e:
+        print("Error: Unable to view contacts:", e)
+
 
 if __name__ == '__main__':
+    conn = create_rw_conn()
+    def main():
+        while True:
+            print("\nChoose an action:")
+            print("1. Insert contact")
+            print("2. Update contact")
+            print("3. Delete contact")
+            print("4. Search contact")
+            print("5. View all contacts")
+            print("6. Exit")
+            choice = input("Enter your choice: ")
+            if choice == "1":
+                name = input("Enter the name of the contact: ")
+                email = input("Enter the email of the contact: ")
+                phone = input("Enter the phone number of the contact: ")
+                insert_contact(name, email, phone)
+            elif choice == "2":
+                contact_id = input("Enter the ID of the contact to update: ")
+                name = input("Enter the new name: ")
+                email = input("Enter the new email: ")
+                phone = input("Enter the new phone number: ")
+                update_contact(contact_id, name, email, phone)
+            elif choice == "3":
+                contact_id = input("Enter the ID of the contact to delete: ")
+                delete_contact(contact_id)
+            elif choice == "4":
+                contact_id = input("Enter the ID of the contact to search: ")
+                search_contact(contact_id)
+            elif choice == "5":
+                view_all_contacts(conn)
+            elif choice == "6":
+                print("Exiting...")
+                break
+            else:
+                print("Invalid choice. Please choose a valid action.")
     #contact_name = input("Enter the name of the contact: ")
     # contact_id = input("To change info enter the id of the contact: ")
     # contact_id = int(input("Enter the ID of the contact to delete: "))
-    conn = create_rw_conn()
+    # conn = create_rw_conn()
     # init_table()
     # insert_contact("Hrehory", "dvornjaga666@gmail.com", "5555557777")
     # fetch_contacts()
@@ -111,6 +180,6 @@ if __name__ == '__main__':
     # new_name, new_phone, new_email = "Kot", "kot@kot.com", "123"
     # update_contact(2, 'Danil', 'danil_suts@gmail.com', '0966666666')
     # delete_contact(contact_id)
-
+    main()
     conn.commit()
     conn.close()
