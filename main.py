@@ -1,4 +1,5 @@
 import null
+import re
 import psycopg2
 
 
@@ -42,6 +43,7 @@ def insert_contact(name, email, phone):
     for contact in contacts_data:
         cursor.execute('''INSERT INTO contacts (name, email, phone)
                           VALUES (%s, %s, %s) RETURNING id''', contact)
+        validate_contact_data(email, phone)
         inserted_id = cursor.fetchone()[0]
         print("Inserted contact with id:", inserted_id)
 
@@ -71,29 +73,43 @@ def print_contact_info_by_name(contact_name):
     cursor.close()
 
 def update_contact(contact_id, name, email, phone):
-   cursor = conn.cursor()
-   cursor.execute("""UPDATE contacts SET name = %s, email = %s, phone = %s
-    WHERE id = %s""",(name, email, phone, contact_id))
-   conn.commit()
-   cursor.close()
+   task = """UPDATE contacts SET name = %s, email = %s, phone = %s
+    WHERE id = %s"""
+   data = (name, email, phone, contact_id)
+   validate_contact_data(email, phone)
+   update_database(task, data)
 
 def delete_contact(contact_id):
+    task = '''DELETE FROM contacts WHERE id = %s'''
+    data = (contact_id,)
+    update_database(task, data)
+
+def update_database(task, data):
     cursor = conn.cursor()
-    cursor.execute('''DELETE FROM contacts WHERE id = %s''', (contact_id,))
+    cursor.execute(task, data)
     conn.commit()
     cursor.close()
-        
+
+
+def validate_contact_data(email, phone):
+    if not re.match(r'^[\w\.-]+@[\w\.-]+(\.[\w]+)+$', email):
+        raise ValueError("Invalid email format")
+
+    if not re.match(r'^\d{10}$', phone):
+        raise ValueError("Invalid phone number format")
+
+
 if __name__ == '__main__':
     #contact_name = input("Enter the name of the contact: ")
     # contact_id = input("To change info enter the id of the contact: ")
     # contact_id = int(input("Enter the ID of the contact to delete: "))
     conn = create_rw_conn()
     # init_table()
-    # insert_contact("Danyl", "danya_sutts@gmail.com", "5555555556")
+    # insert_contact("Hrehory", "dvornjaga666@gmail.com", "5555557777")
     # fetch_contacts()
     # print_contact_info_by_name(contact_name)
     # new_name, new_phone, new_email = "Kot", "kot@kot.com", "123"
-    # update_contact(contact_id, new_name, new_email, new_phone)
+    # update_contact(2, 'Danil', 'danil_suts@gmail.com', '0966666666')
     # delete_contact(contact_id)
 
     conn.commit()
